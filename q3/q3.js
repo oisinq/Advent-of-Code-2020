@@ -1,8 +1,3 @@
-const parseLine = (line) => {
-  const regex = /(\d*)-(\d*) ([a-z]): ([a-z]*)/;
-  return regex.exec(line);
-};
-
 const containsTree = (line, index) => {
   return line.charAt(index % line.length) === "#";
 };
