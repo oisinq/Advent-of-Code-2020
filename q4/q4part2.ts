@@ -89,3 +89,5 @@ for (const passport of passports) {
 }
 
 console.log(count);
+
+export {};
