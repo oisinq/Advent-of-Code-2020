@@ -4,10 +4,6 @@ const containsGoldShinyBag = (
 ): boolean => {
   const containedBags = map.get(bag);
 
-  if (containedBags === undefined) {
-    console.log("what's going on!");
-  }
-
   if (containedBags.length === 0) return false;
   if (containedBags.includes("shiny gold")) return true;
 
@@ -52,3 +48,5 @@ for (const colour of bagMap.keys()) {
 }
 
 console.log(count);
+
+export {};
