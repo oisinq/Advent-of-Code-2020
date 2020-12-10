@@ -3,19 +3,6 @@ type Instruction = {
   value: number;
 };
 
-class Machine {
-  accumulator = 0;
-  instructions: string[] = [];
-
-  constructor(instructions: string[]) {
-    this.instructions = instructions;
-  }
-
-  get acc(): number {
-    return this.accumulator;
-  }
-}
-
 const executeInstruction = (
   instruction: Instruction,
   index: number,
