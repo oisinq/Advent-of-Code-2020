@@ -11,7 +11,10 @@ const productOfDifferences = (voltages: number[]): number => {
   return countOfOneDifferences * countOfThreeDifferences;
 };
 
-const numberOfPossibleArrangements = (voltages: number[]): number => {
+const numberOfPossibleArrangements = (
+  voltages: number[],
+  cache: Map<string, number>
+): number => {
   if (voltages.length === 1) return 1;
 
   const possibleNextIndex: number[] = [1];
@@ -21,10 +24,17 @@ const numberOfPossibleArrangements = (voltages: number[]): number => {
   if (voltages.length > 3 && voltages[3] - voltages[0] <= 3)
     possibleNextIndex.push(3);
 
-  return possibleNextIndex.reduce(
-    (sum, index) => sum + numberOfPossibleArrangements(voltages.slice(index)),
-    0
-  );
+  return possibleNextIndex.reduce((sum, index) => {
+    const slicedVoltages = voltages.slice(index);
+    const voltageStr = slicedVoltages.join(",");
+
+    if (cache.has(voltageStr)) return sum + cache.get(voltageStr);
+
+    const recursiveCount = numberOfPossibleArrangements(slicedVoltages, cache);
+    cache.set(voltageStr, recursiveCount);
+
+    return sum + recursiveCount;
+  }, 0);
 };
 
 var fs = require("fs");
@@ -38,8 +48,9 @@ const inputVoltages: [number] = read
 const voltages = [0, ...inputVoltages, Math.max(...inputVoltages) + 3];
 
 voltages.sort((x, y) => x - y);
+const cache: Map<string, number> = new Map();
 
 console.log("Part 1:", productOfDifferences(voltages));
-console.log("Part 2:", numberOfPossibleArrangements(voltages));
+console.log("Part 2:", numberOfPossibleArrangements(voltages, cache));
 
 export {};
