@@ -1,6 +1,16 @@
 type Coordinates = [number, number];
+type Board = string[][];
+type Direction =
+  | "top"
+  | "top-right"
+  | "right"
+  | "bottom-right"
+  | "bottom"
+  | "bottom-left"
+  | "left"
+  | "top-left";
 
-const countOccupiedSeatsOnBoard = (board): number => {
+const countOccupiedSeatsOnBoard = (board: Board): number => {
   let count = 0;
 
   for (let i = 0; i < board.length; i++) {
@@ -12,12 +22,90 @@ const countOccupiedSeatsOnBoard = (board): number => {
   return count;
 };
 
-const isSeatOccupied = ([i, j]: Coordinates, board: string[][]): boolean =>
+const isSeatOccupied = ([i, j]: Coordinates, board: Board): boolean =>
   board[i][j] === "#";
+
+const isFloor = ([i, j]: Coordinates, board: Board): boolean =>
+  board[i][j] === ".";
+
+const squareExists = ([i, j]: Coordinates, board: Board): boolean =>
+  i in board && j in board[0];
+
+const findSeatInDirection = (
+  [i, j]: Coordinates,
+  direction: Direction,
+  board: Board
+): Coordinates | null => {
+  let new_i: number, new_j: number;
+  switch (direction) {
+    case "top":
+      [new_i, new_j] = [i - 1, j];
+      break;
+    case "top-left":
+      [new_i, new_j] = [i - 1, j - 1];
+      break;
+    case "top-right":
+      [new_i, new_j] = [i - 1, j + 1];
+      break;
+    case "left":
+      [new_i, new_j] = [i, j - 1];
+      break;
+    case "right":
+      [new_i, new_j] = [i, j + 1];
+      break;
+    case "bottom":
+      [new_i, new_j] = [i + 1, j];
+      break;
+    case "bottom-left":
+      [new_i, new_j] = [i + 1, j - 1];
+      break;
+    case "bottom-right":
+      [new_i, new_j] = [i + 1, j + 1];
+      break;
+  }
+
+  if (squareExists([new_i, new_j], board)) {
+    if (isFloor([new_i, new_j], board)) {
+      return findSeatInDirection([new_i, new_j], direction, board);
+    }
+
+    return [new_i, new_j];
+  }
+
+  return null;
+};
+
+const countOccupiedFirstSeats = (
+  coordinates: Coordinates,
+  board: Board
+): number => {
+  let count = 0;
+
+  const directions: Direction[] = [
+    "top",
+    "top-right",
+    "top-left",
+    "left",
+    "right",
+    "bottom",
+    "bottom-left",
+    "bottom-right",
+  ];
+
+  for (const direction of directions) {
+    const seat = findSeatInDirection(coordinates, direction, board);
+
+    if (seat !== null) {
+      count += isSeatOccupied(seat, board) ? 1 : 0;
+    }
+  }
+
+  return count;
+};
 
 const countOccupiedAdjacentSeats = (
   [i, j]: Coordinates,
-  board: string[][]
+  board: Board
 ): number => {
   let count = 0;
 
@@ -41,8 +129,8 @@ const countOccupiedAdjacentSeats = (
   return count;
 };
 
-const simulateTurn = (board: string[][]): [string[][], number] => {
-  const nextTurnBoard: string[][] = [];
+const simulateAdjacentSeatTurn = (board: Board): [Board, number] => {
+  const nextTurnBoard: Board = [];
   let numChanges = 0;
 
   for (let i = 0; i < board.length; i++) {
@@ -71,8 +159,35 @@ const simulateTurn = (board: string[][]): [string[][], number] => {
   return [nextTurnBoard, numChanges];
 };
 
-const getBoardFromInput = (input: string[]): string[][] => {
-  const board: string[][] = [];
+const simulateFirstSeatTurn = (board: Board): [Board, number] => {
+  const nextTurnBoard: Board = [];
+  let numChanges = 0;
+
+  for (let i = 0; i < board.length; i++) {
+    nextTurnBoard[i] = [];
+    for (let j = 0; j < board[i].length; j++) {
+      const currentSeat = board[i][j];
+
+      if (currentSeat === "L" && countOccupiedFirstSeats([i, j], board) === 0) {
+        nextTurnBoard[i].push("#");
+        numChanges += 1;
+      } else if (
+        currentSeat === "#" &&
+        countOccupiedFirstSeats([i, j], board) >= 5
+      ) {
+        nextTurnBoard[i].push("L");
+        numChanges += 1;
+      } else {
+        nextTurnBoard[i].push(currentSeat);
+      }
+    }
+  }
+
+  return [nextTurnBoard, numChanges];
+};
+
+const getBoardFromInput = (input: string[]): Board => {
+  const board: Board = [];
 
   for (let i = 0; i < input.length; i++) {
     board[i] = [];
@@ -89,11 +204,11 @@ var fs = require("fs");
 const read = fs.readFileSync(`./q11/input.txt`);
 const input: string[] = read.toString().split("\n");
 
-let board: string[][] = getBoardFromInput(input);
+let board: Board = getBoardFromInput(input);
 let numChanges = -1;
 
 while (numChanges !== 0) {
-  [board, numChanges] = simulateTurn(board);
+  [board, numChanges] = simulateFirstSeatTurn(board);
 }
 
 console.log(countOccupiedSeatsOnBoard(board));
