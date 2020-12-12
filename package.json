@@ -18,5 +18,9 @@
   "homepage": "https://github.com/oisinq/Advent-of-Code-2020#readme",
   "devDependencies": {
     "@types/node": "^14.14.10"
+  },
+  "dependencies": {
+    "@types/mathjs": "^6.0.8",
+    "mathjs": "^8.1.0"
   }
 }
