@@ -208,9 +208,18 @@ let board: Board = getBoardFromInput(input);
 let numChanges = -1;
 
 while (numChanges !== 0) {
+  [board, numChanges] = simulateAdjacentSeatTurn(board);
+}
+
+console.log("Part 1:", countOccupiedSeatsOnBoard(board));
+
+board = getBoardFromInput(input);
+numChanges = -1;
+
+while (numChanges !== 0) {
   [board, numChanges] = simulateFirstSeatTurn(board);
 }
 
-console.log(countOccupiedSeatsOnBoard(board));
+console.log("Part 2:", countOccupiedSeatsOnBoard(board));
 
 export {};
