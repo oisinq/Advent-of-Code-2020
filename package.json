@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@types/mathjs": "^6.0.8",
+    "bignum": "^0.13.1",
     "mathjs": "^8.1.0"
   }
 }
