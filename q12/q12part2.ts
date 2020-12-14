@@ -1,3 +1,4 @@
+// @ts-ignore
 import { multiply, rotationMatrix } from "mathjs";
 
 type Instruction = {
